@@ -1,0 +1,73 @@
+.games-section {
+  max-width: 1240px;
+  min-height: calc(100svh - 170px);
+  margin: auto;
+  padding: 72px 32px;
+}
+.games-section h1 {
+  font-size: clamp(28px, 4vw, 36px);
+  margin-bottom: 28px;
+}
+.game-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr));
+  gap: 20px;
+}
+.game-card {
+  display: block;
+  padding: 28px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: var(--surface);
+  transition:
+    box-shadow 0.2s,
+    border-color 0.2s;
+}
+.game-card:hover {
+  border-color: var(--accent);
+  box-shadow: var(--shadow);
+}
+.game-card-symbols {
+  width: fit-content;
+  padding: 14px 18px;
+  margin-bottom: 24px;
+  background: var(--surface-soft);
+  color: var(--accent);
+  font-size: 28px;
+  border-radius: 12px;
+  letter-spacing: 0.1em;
+}
+.game-card-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+.game-card h2 {
+  font-size: 20px;
+  margin-bottom: 8px;
+}
+.game-card p {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+}
+.play-label {
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+@media (max-width: 600px) {
+  .games-section {
+    padding: 44px 20px;
+  }
+  .game-card {
+    padding: 24px;
+  }
+  .game-card-bottom {
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+}

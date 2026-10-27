@@ -2,19 +2,19 @@
 
 ## Project Structure & Module Organization
 
-JETTA is a static browser game collection. `index.html` contains the screens, `css/` contains responsive styles, `js/` contains UI, arithmetic, and session scripts, and `tests/` contains automated tests. Keep documentation at the root and generated files and local dependencies out of version control.
+JETTA is a static browser game collection. `index.html` is the game library; `games/arithmetic.html` is a standalone game page. `css/style.css` defines shared sky-blue theme tokens and controls; page styles live in `css/home.css` and `css/arithmetic.css`. Shared scripts live in `js/`, while `js/arithmetic/` separates arithmetic, session state, settings, rendering, viewport handling, and controller logic. Automated tests live in `tests/`. Keep documentation at the root. Exclude `node_modules/` and generated artifacts from version control; commit `package-lock.json` for reproducible development installs.
 
 ## Build, Test, and Development Commands
 
-No dependency installation or build is needed. Browser scripts use the `globalThis.Jetta` namespace and load in dependency order with `defer` to support both file and HTTP URLs. From the root, run `python3 -m http.server 8000` for local development and `npm test` for tests (Node.js 18+). See README.md for setup and hosting.
+The site needs no build step or runtime dependencies. Open `index.html` directly, or run `python3 -m http.server 8000` from the root. For development, use Node.js 18+ and `npm ci`. Run `npm test` for tests, `npm run check` for formatting validation, and `npm run format` to apply Prettier. Browser scripts share `globalThis.Jetta`; load theme initialization synchronously in the head, then page scripts in dependency order with `defer` to support file and HTTP URLs. See README.md for details.
 
 ## Coding Style & Naming Conventions
 
-Follow the conventions of the language and framework introduced to the project. Use consistent indentation, descriptive names, and small, focused modules. Configure a formatter or linter when the first source files are added, and document how to run it. Avoid committing credentials or machine-specific configuration.
+Use Prettier with the committed configuration: two-space indentation, single-quoted JavaScript strings, and a 100-column print width. Keep DOM-free game rules separate from browser UI. Use shared CSS custom properties for colors, native links for page navigation, and the `hidden` attribute for game screen visibility. Avoid duplicated overrides, credentials, and machine-specific configuration.
 
 ## Testing Guidelines
 
-Use the built-in Node.js test runner with `tests/*.test.js`. Test arithmetic generation and session behavior independently from the DOM, including deadline boundaries and regression cases. Run `npm test` before committing. For layout changes, also inspect desktop, tablet, narrow phone, and reduced-height keyboard viewports in a browser.
+Use the built-in Node.js test runner with `tests/*.test.js`. Test arithmetic and session behavior independently, and use jsdom integration tests for presets, validation, screen transitions, theme initialization, file loading, and navigation paths. DOM tests do not validate pixel layout or native keyboards. Run `npm test` and `npm run check` before committing. For layout changes, inspect desktop, tablet, narrow phone, and reduced-height keyboard viewports in a browser when access is available; report any verification limitation.
 
 ## Commit & Pull Request Guidelines
 

@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+    />
+    <meta name="theme-color" content="#f0f9ff" />
+    <meta
+      name="description"
+      content="Choose a question goal or time challenge and practice arithmetic."
+    />
+    <title>Arithmetic — JETTA</title>
+    <script src="../js/theme.js"></script>
+    <link rel="stylesheet" href="../css/style.css" />
+    <link rel="stylesheet" href="../css/arithmetic.css" />
+    <script defer src="../js/storage.js"></script>
+    <script defer src="../js/arithmetic/math.js"></script>
+    <script defer src="../js/arithmetic/session.js"></script>
+    <script defer src="../js/arithmetic/settings.js"></script>
+    <script defer src="../js/arithmetic/view.js"></script>
+    <script defer src="../js/arithmetic/viewport.js"></script>
+    <script defer src="../js/arithmetic/controller.js"></script>
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <a class="brand" href="../index.html" aria-label="JETTA home"
+          ><span class="brand-icon" aria-hidden="true">✳</span><span>JETTA</span></a
+        ><button
+          id="theme-toggle"
+          class="theme-toggle icon-button"
+          type="button"
+          aria-label="Switch to dark mode"
+          title="Change color theme"
+        >
+          <span aria-hidden="true">☾</span>
+        </button>
+      </div>
+    </header>
+    <main id="app">
+      <section id="game" class="page" aria-labelledby="game-title">
+        <div class="game-wrap">
+          <a
+            class="back-link icon-button"
+            id="back-home"
+            href="../index.html"
+            aria-label="Back to all games"
+            title="All games"
+            >←</a
+          >
+          <div class="game-heading arithmetic-heading">
+            <div>
+              <h1 id="game-title">Arithmetic</h1>
+              <div class="operation-mark" aria-hidden="true">
+                <span>＋</span><span>−</span><span>×</span><span>÷</span>
+              </div>
+            </div>
+          </div>
+          <dialog id="mode-dialog" aria-labelledby="mode-title" aria-describedby="mode-description">
+            <div class="mode-dialog-heading">
+              <h2 id="mode-title">Game type</h2>
+              <button id="close-mode" class="text-button" aria-label="Close game type selection">
+                ✕
+              </button>
+            </div>
+            <p id="mode-description" class="sr-only">
+              Choose a question goal to measure your time, or a time challenge to count your
+              answers.
+            </p>
+            <div class="mode-options">
+              <button
+                class="mode-card"
+                data-mode="count"
+                aria-label="Question goal: set a question count and measure your time"
+              >
+                <span class="mode-flow" aria-hidden="true"><b>#</b><i>→</i><b>◷</b></span
+                ><strong>Question goal</strong><small>Count → Time</small>
+              </button>
+              <button
+                class="mode-card"
+                data-mode="time"
+                aria-label="Time challenge: set a time limit and count your answers"
+              >
+                <span class="mode-flow" aria-hidden="true"><b>◷</b><i>→</i><b>#</b></span
+                ><strong>Time challenge</strong><small>Time → Count</small>
+              </button>
+            </div>
+          </dialog>
+          <div id="setup" class="panel setup-panel">
+            <div class="mode-summary">
+              <div class="selected-mode-label">
+                <span id="selected-mode-icon" aria-hidden="true">#</span
+                ><strong id="selected-mode">Game type</strong>
+              </div>
+              <button
+                id="change-mode"
+                class="secondary icon-button"
+                type="button"
+                aria-label="Change game type"
+                title="Change game type"
+              >
+                ⇄
+              </button>
+            </div>
+            <fieldset>
+              <legend>Operations</legend>
+              <div class="operation-grid">
+                <label class="option" title="Addition"
+                  ><input
+                    type="checkbox"
+                    name="operation"
+                    value="add"
+                    aria-label="Addition"
+                    checked
+                  /><span aria-hidden="true"><b>＋</b></span></label
+                >
+                <label class="option" title="Subtraction"
+                  ><input
+                    type="checkbox"
+                    name="operation"
+                    value="subtract"
+                    aria-label="Subtraction"
+                    checked
+                  /><span aria-hidden="true"><b>−</b></span></label
+                >
+                <label class="option" title="Multiplication"
+                  ><input
+                    type="checkbox"
+                    name="operation"
+                    value="multiply"
+                    aria-label="Multiplication"
+                    checked
+                  /><span aria-hidden="true"><b>×</b></span></label
+                >
+                <label class="option" title="Division"
+                  ><input
+                    type="checkbox"
+                    name="operation"
+                    value="divide"
+                    aria-label="Division"
+                    checked
+                  /><span aria-hidden="true"><b>÷</b></span></label
+                >
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Difficulty</legend>
+              <div class="choice-grid">
+                <label class="option"
+                  ><input
+                    type="radio"
+                    name="level"
+                    value="easy"
+                    aria-label="Easy difficulty"
+                    checked
+                  /><span
+                    ><strong class="difficulty-mark" aria-hidden="true">● ○ ○</strong
+                    ><small>Easy</small></span
+                  ></label
+                >
+                <label class="option"
+                  ><input
+                    type="radio"
+                    name="level"
+                    value="medium"
+                    aria-label="Medium difficulty"
+                  /><span
+                    ><strong class="difficulty-mark" aria-hidden="true">● ● ○</strong
+                    ><small>Medium</small></span
+                  ></label
+                >
+                <label class="option"
+                  ><input
+                    type="radio"
+                    name="level"
+                    value="hard"
+                    aria-label="Hard difficulty"
+                  /><span
+                    ><strong class="difficulty-mark" aria-hidden="true">● ● ●</strong
+                    ><small>Hard</small></span
+                  ></label
+                >
+              </div>
+            </fieldset>
+            <fieldset id="count-settings">
+              <legend><span aria-hidden="true">#</span> Questions</legend>
+              <label class="sr-only" for="question-count">Number of questions, from 1 to 200</label>
+              <div class="limit-control">
+                <div class="limit-value">
+                  <input
+                    class="limit-input"
+                    id="question-count"
+                    type="number"
+                    inputmode="numeric"
+                    min="1"
+                    max="200"
+                    step="1"
+                    value="10"
+                    required
+                  /><span class="limit-range" aria-hidden="true">1–200</span>
+                </div>
+                <div class="preset-options" role="group" aria-label="Questions presets">
+                  <button
+                    type="button"
+                    class="preset-button"
+                    data-target="question-count"
+                    data-preset="10"
+                    aria-label="10 questions"
+                    aria-pressed="false"
+                  >
+                    10</button
+                  ><button
+                    type="button"
+                    class="preset-button"
+                    data-target="question-count"
+                    data-preset="30"
+                    aria-label="30 questions"
+                    aria-pressed="false"
+                  >
+                    30</button
+                  ><button
+                    type="button"
+                    class="preset-button"
+                    data-target="question-count"
+                    data-preset="50"
+                    aria-label="50 questions"
+                    aria-pressed="false"
+                  >
+                    50
+                  </button>
+                </div>
+              </div>
+            </fieldset>
+            <fieldset id="time-settings" hidden>
+              <legend><span aria-hidden="true">◷</span> Seconds</legend>
+              <label class="sr-only" for="time-limit"
+                >Time limit in seconds, from 10 to 3,600</label
+              >
+              <div class="limit-control">
+                <div class="limit-value">
+                  <input
+                    class="limit-input"
+                    id="time-limit"
+                    type="number"
+                    inputmode="numeric"
+                    min="10"
+                    max="3600"
+                    step="1"
+                    value="60"
+                    required
+                  /><span class="limit-range" aria-hidden="true">10–3,600</span>
+                </div>
+                <div class="preset-options" role="group" aria-label="Seconds presets">
+                  <button
+                    type="button"
+                    class="preset-button"
+                    data-target="time-limit"
+                    data-preset="30"
+                    aria-label="30 seconds"
+                    aria-pressed="false"
+                  >
+                    30 s</button
+                  ><button
+                    type="button"
+                    class="preset-button"
+                    data-target="time-limit"
+                    data-preset="60"
+                    aria-label="60 seconds"
+                    aria-pressed="false"
+                  >
+                    60 s</button
+                  ><button
+                    type="button"
+                    class="preset-button"
+                    data-target="time-limit"
+                    data-preset="90"
+                    aria-label="90 seconds"
+                    aria-pressed="false"
+                  >
+                    90 s
+                  </button>
+                </div>
+              </div>
+            </fieldset>
+            <p id="setup-error" class="error" role="alert"></p>
+            <button class="primary full" id="start-game" aria-label="Start arithmetic practice">
+              <span aria-hidden="true">▶</span> Play
+            </button>
+          </div>
+          <div id="practice" class="panel" hidden>
+            <div class="practice-top">
+              <div>
+                <span class="step-label">KEEP GOING!</span>
+                <h2 id="practice-title">Question goal</h2>
+              </div>
+              <button class="text-button" id="quit-game">Quit</button>
+            </div>
+            <div class="live-stats">
+              <div>
+                <span id="timer-label">Time elapsed</span
+                ><strong id="timer" role="timer">0:00</strong>
+              </div>
+              <div><span>Answered</span><strong id="answered-count">0</strong></div>
+            </div>
+            <div class="progress-info">
+              <span id="progress-label">Progress</span><strong id="progress-text"></strong>
+            </div>
+            <div class="progress-track"><div id="progress-bar"></div></div>
+            <div class="question-area">
+              <span class="question-label">QUESTION <span id="question-number"></span></span>
+              <div id="question" class="question" aria-live="polite" aria-atomic="true"></div>
+              <form id="answer-form">
+                <label class="sr-only" for="answer">Answer</label
+                ><input
+                  id="answer"
+                  type="text"
+                  inputmode="numeric"
+                  pattern="[0-9]+"
+                  enterkeyhint="go"
+                  autocomplete="off"
+                  autocapitalize="off"
+                  spellcheck="false"
+                  placeholder="Answer"
+                  maxlength="6"
+                  required
+                /><button class="primary" type="submit">Submit <span>→</span></button>
+              </form>
+              <p class="answer-hint">Type your answer, then press Enter or Submit.</p>
+            </div>
+          </div>
+          <div id="results" hidden>
+            <div class="panel result-hero">
+              <span class="step-label">PRACTICE COMPLETE ✳</span>
+              <h2 id="result-title" tabindex="-1">Great work today!</h2>
+              <p id="result-description">Give yourself a round of applause for finishing.</p>
+              <div class="score-row">
+                <div class="score-circle"><strong id="score"></strong><span>Accuracy</span></div>
+                <div class="result-stats">
+                  <div><span>Questions answered</span><strong id="total-count"></strong></div>
+                  <div><span>Correct answers</span><strong id="correct-count"></strong></div>
+                  <div><span>Time elapsed</span><strong id="elapsed"></strong></div>
+                  <div><span>Average per question</span><strong id="average"></strong></div>
+                </div>
+              </div>
+            </div>
+            <div class="panel analysis-panel">
+              <div class="analysis-title">
+                <div>
+                  <span class="step-label">YOUR RESULTS</span>
+                  <h2>Your practice results</h2>
+                </div>
+                <span>✳</span>
+              </div>
+              <h3>Accuracy by operation</h3>
+              <div id="operation-results" class="operation-results"></div>
+              <h3>Question review</h3>
+              <div id="question-results" class="question-results"></div>
+              <p id="empty-results" hidden>No answers submitted this time. Try another round!</p>
+            </div>
+            <div class="result-actions">
+              <button id="retry" class="primary">Practice again <span>→</span></button
+              ><a id="result-home" class="secondary" href="../index.html">Back to games</a>
+            </div>
+          </div>
+          <div id="history" class="history" hidden>
+            <div>
+              <span class="section-kicker">YOUR LAST PRACTICE</span>
+              <h2>Recent practice</h2>
+            </div>
+            <div id="history-content"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer>
+      <div><a class="footer-brand" href="../index.html">✳ JETTA</a><span>© 2026 JETTA</span></div>
+    </footer>
+  </body>
+</html>
