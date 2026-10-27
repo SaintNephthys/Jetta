@@ -37,6 +37,7 @@ npm ci          # 개발 도구 설치
 npm test        # 산술·세션·페이지 및 DOM 동작 테스트
 npm run check   # Prettier 포맷 검사
 npm run format  # 코드 포맷 적용
+npm run build:pages # 공개 파일만 artifacts/pages/에 구성
 ```
 
 테스트는 문제 생성, 두 모드의 종료 조건과 마감 시각, 프리셋과 직접 입력, 파일 직접 실행, 페이지 이동 경로, 테마 및 키보드 뷰포트 처리, 최대 12자리 출제와 24자리 정답 채점, 다크 테마 색상 대비를 검증합니다. DOM 테스트는 jsdom에서 실행하므로 실제 화면 배치나 기기 키보드를 검증하지는 않습니다. 모바일·태블릿·폴더블과 키보드가 열린 상태의 최종 배치는 실기기 브라우저에서 확인해야 합니다.
@@ -59,9 +60,32 @@ npm run format  # 코드 포맷 적용
 
 ## GitHub Pages 배포
 
-1. 이 폴더를 GitHub 저장소에 푸시합니다.
-2. 저장소의 **Settings → Pages**에서 배포 소스를 **Deploy from a branch**로 선택합니다.
-3. 사용할 브랜치와 **/(root)** 폴더를 선택하고 저장합니다.
-4. 배포가 완료되면 Pages 설정에 표시되는 주소로 접속합니다.
+`.github/workflows/pages.yml`은 push와 pull request에서 포맷 검사·테스트·배포 파일 구성을 실행합니다. 검증이 성공한 **원격 저장소의 기본 브랜치**에서만 GitHub Pages에 자동 배포합니다. 다른 브랜치나 PR에서는 배포하지 않으며, 기본 브랜치의 **Actions → Validate and deploy Pages → Run workflow**에서도 다시 실행할 수 있습니다.
 
-모든 리소스 경로는 상대 경로이므로 프로젝트 저장소의 하위 경로에서도 동작합니다. 기본 시스템 글꼴을 사용하며, 배포 시 개발 도구나 `node_modules/`는 필요하지 않습니다.
+최초 연결 시 한 번 설정합니다.
+
+1. GitHub에 저장소를 준비하고 주소를 확인합니다. Pages를 지원하는 저장소·요금제여야 합니다.
+2. 원격 저장소를 연결합니다. 아래 `OWNER/REPOSITORY`를 실제 값으로 바꾸세요. 이미 `origin`이 있다면 새로 추가하지 말고 먼저 주소를 확인합니다.
+
+   ```sh
+   git remote add origin https://github.com/OWNER/REPOSITORY.git
+   ```
+
+3. GitHub 저장소의 **Settings → Pages → Build and deployment → Source**에서 **GitHub Actions**를 선택합니다. GitHub Actions가 저장소 정책에서 허용되어 있어야 합니다.
+4. 현재 로컬 브랜치는 `master`입니다. 배포하려는 브랜치와 GitHub 기본 브랜치가 같은지 확인한 뒤 push합니다.
+
+   ```sh
+   git push -u origin master
+   ```
+
+5. **Actions → Validate and deploy Pages**의 성공 여부와 `github-pages` 환경의 배포 URL을 확인합니다. 이후 기본 브랜치에 push하면 검증 후 자동 배포됩니다.
+
+브랜치가 `main` 등으로 바뀌어도 원격 기본 브랜치를 기준으로 판단하므로 워크플로 수정은 필요하지 않습니다. 워크플로가 통과했는데 배포 작업이 건너뛰어졌다면 push한 브랜치가 기본 브랜치인지 확인하세요. `github-pages` 환경에 승인·브랜치 보호 규칙이 있다면 해당 규칙도 충족해야 합니다.
+
+설정에는 GitHub에서 실행 시 제공하는 기본 토큰을 사용하며 별도 PAT나 비밀값을 소스에 넣지 않습니다. 검증 작업은 저장소 읽기 권한으로 실행하고, 배포 작업에만 `pages: write`와 `id-token: write`를 부여합니다. 공식 절차는 [GitHub Pages 사용자 지정 워크플로 안내](https://docs.github.com/en/pages/getting-started-with-github-pages/using-custom-workflows-with-github-pages)를 참고하세요.
+
+배포 스크립트 `scripts/build-pages.js`는 `index.html`과 `games/`의 HTML, `css/`의 CSS, `js/`의 JavaScript만 `artifacts/pages/`로 복사합니다. 숨김 파일·환경변수·키 파일·개발 의존성·테스트·문서·Git 메타데이터는 배포 대상에 포함하지 않습니다. 심볼릭 링크는 거부합니다. 이미지 등 새 자산 형식이나 폴더가 필요하면 공개해도 되는지 검토한 후 허용 목록을 확장하세요.
+
+모든 리소스 경로는 상대 경로이므로 프로젝트 저장소의 하위 경로에서도 동작합니다. 기본 시스템 글꼴을 사용하며, 배포 시 개발 도구나 `node_modules/`는 필요하지 않습니다. 로컬에서는 생성한 `artifacts/pages/`를 정적 서버로 열어 배포 파일을 미리 확인할 수 있습니다.
+
+보안 관련 원칙과 게시 전 점검 방법은 [SECURITY.md](SECURITY.md)를 참고하세요. `.gitignore`는 앞으로의 실수로 인한 커밋을 줄이는 장치이며, 이미 추적되거나 Git 이력에 남은 비밀값을 제거하지는 않습니다.
