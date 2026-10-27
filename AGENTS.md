@@ -2,11 +2,11 @@
 
 ## Project Structure & Module Organization
 
-JETTA is a static browser game collection. `index.html` contains the screens, `css/` contains responsive styles, `js/` contains UI, arithmetic, and session modules, and `tests/` contains automated tests. Keep documentation at the root and generated files and local dependencies out of version control.
+JETTA is a static browser game collection. `index.html` contains the screens, `css/` contains responsive styles, `js/` contains UI, arithmetic, and session scripts, and `tests/` contains automated tests. Keep documentation at the root and generated files and local dependencies out of version control.
 
 ## Build, Test, and Development Commands
 
-No dependency installation or build is needed. From the root, run `python3 -m http.server 8000` for local development and `npm test` for tests (Node.js 18+). See README.md for setup and hosting.
+No dependency installation or build is needed. Browser scripts use the `globalThis.Jetta` namespace and load in dependency order with `defer` to support both file and HTTP URLs. From the root, run `python3 -m http.server 8000` for local development and `npm test` for tests (Node.js 18+). See README.md for setup and hosting.
 
 ## Coding Style & Naming Conventions
 

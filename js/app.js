@@ -1,5 +1,6 @@
-import { operations, summarize } from './math.js';
-import { PracticeSession } from './session.js';
+(() => {
+'use strict';
+const { operations, summarize, PracticeSession } = globalThis.Jetta;
 
 const $ = selector => document.querySelector(selector);
 const show = (element, visible) => element.classList.toggle('hidden', !visible);
@@ -45,7 +46,8 @@ $('#close-mode').addEventListener('click', () => modeDialog.close());
 modeDialog.addEventListener('close', () => { if (choosingOnEntry) openHome(); });
 modeDialog.querySelectorAll('[data-mode]').forEach(button => button.addEventListener('click', () => {
   mode = button.dataset.mode;
-  $('#selected-mode').textContent = mode === 'count' ? 'Question goal · measure your time' : 'Time challenge · count your answers';
+  $('#selected-mode').textContent = mode === 'count' ? 'Question goal' : 'Time challenge';
+  $('#selected-mode-icon').textContent = mode === 'count' ? '#' : '◷';
   show($('#count-settings'), mode === 'count');
   show($('#time-settings'), mode === 'time');
   choosingOnEntry = false;
@@ -185,3 +187,5 @@ themeToggle.addEventListener('click', () => {
   try { localStorage.setItem('thinking-playground-theme', theme); } catch { /* Theme remains active for this page. */ }
   updateThemeButton();
 });
+
+})();

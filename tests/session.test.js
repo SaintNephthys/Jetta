@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { PracticeSession } from '../js/session.js';
+import { PracticeSession } from './helpers/runtime.js';
 
 const settings = { mode: 'count', limit: 3, selected: ['add', 'subtract', 'multiply', 'divide'], level: 'easy', now: 1000 };
 

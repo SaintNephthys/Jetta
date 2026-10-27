@@ -1,6 +1,8 @@
-import { makeQuestion, summarize } from './math.js';
+(() => {
+'use strict';
+const { makeQuestion, summarize } = globalThis.Jetta;
 
-export class PracticeSession {
+class PracticeSession {
   constructor({ mode, limit, selected, level, now = Date.now(), random = Math.random }) {
     if (!['count', 'time'].includes(mode) || !Number.isInteger(limit) || limit < 1 ||
         !selected?.length || selected.some(op => !['add', 'subtract', 'multiply', 'divide'].includes(op)) ||
@@ -50,3 +52,6 @@ export class PracticeSession {
     return { ...summary, seconds, average: summary.total ? seconds / summary.total : null, mode: this.mode };
   }
 }
+
+globalThis.Jetta.PracticeSession = PracticeSession;
+})();

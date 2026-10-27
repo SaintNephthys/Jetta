@@ -75,3 +75,27 @@ body.playing>.header,body.playing footer,body.playing .game-heading,body.playing
 @media(horizontal-viewport-segments:2){#practice{width:min(860px,env(viewport-segment-width 0 0));left:calc(env(viewport-segment-left 0 0) + env(viewport-segment-width 0 0)/2)}}
 @media(vertical-viewport-segments:2){#practice{height:min(var(--visible-height,100dvh),env(viewport-segment-height 0 0))}}
 .short-game #practice .progress-info,.short-game #practice .progress-track,.short-game #practice .question-label{display:none}.short-game #practice .question-area{padding-top:4px}.short-game #practice .question{font-size:30px;margin:0 0 6px}.short-game .live-stats{margin-top:0}.short-game .live-stats strong{font-size:18px}
+
+/* Symbol-led arithmetic setup. Keep short labels where they clarify a choice. */
+.icon-button{display:inline-grid;place-items:center;width:44px;min-width:44px;height:44px;min-height:44px;font-size:24px;line-height:1}
+.arithmetic-heading{justify-content:center;margin:12px 0 24px;text-align:center}
+.arithmetic-heading h1{font-size:18px;font-weight:600;letter-spacing:0;margin:0 0 16px;color:#687d70}
+.operation-mark{display:flex;justify-content:center;gap:12px}
+.operation-mark span{display:grid;place-items:center;width:56px;height:56px;border-radius:14px;background:#e8f1e3;color:#4b805b;font-size:36px;font-weight:700}
+.operation-mark span:nth-child(2){background:#f8e8d8;color:#a37454}.operation-mark span:nth-child(4){background:#efefdc;color:#828649}
+#setup{max-width:600px;margin:0 auto 20px;padding:28px}
+#setup .mode-summary{margin:0;padding:0 0 20px}
+.selected-mode-label{display:flex;align-items:center;gap:14px}.selected-mode-label>span{font-size:32px;color:#4b805b;min-width:32px;text-align:center}
+.mode-summary .selected-mode-label strong{margin:0;font-size:16px}
+#setup fieldset{margin-top:24px}#setup legend{font-size:12px;letter-spacing:.03em;color:#687d70}
+#setup .operation-grid{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:12px}
+#setup .operation-grid .option span{min-height:64px;position:relative}#setup .operation-grid b{font-size:32px;font-weight:500}
+#setup .operation-grid input:checked+span::after{content:'✓';position:absolute;top:4px;right:6px;font-size:11px;font-weight:700}
+#setup .choice-grid .option span{min-height:64px;gap:8px}#setup .difficulty-mark{font-size:12px;letter-spacing:1px;white-space:nowrap}#setup .choice-grid small{font-size:12px}
+.limit-control{display:flex;align-items:center;gap:16px;margin-top:12px}.limit-control .limit-input{width:120px;max-width:100%;font-size:24px;font-weight:700;text-align:center}.limit-range{font-size:12px;color:#687d70;white-space:nowrap}
+#start-game{justify-content:center;gap:12px;font-size:18px;margin-top:24px;min-height:56px}#start-game>span{font-size:20px}
+#mode-dialog h2{margin:0;font-size:22px}.mode-options{margin-top:20px}.mode-card{min-height:170px;align-items:center;text-align:center;justify-content:center;gap:10px}.mode-card .mode-flow{display:flex;align-items:center;gap:16px;font-size:38px}.mode-flow b{font-weight:600}.mode-flow i{font-size:20px;font-style:normal;opacity:.6}.mode-card strong{font-size:17px}.mode-card small{font-size:12px}
+[data-theme="dark"] .arithmetic-heading h1,[data-theme="dark"] #setup legend,[data-theme="dark"] .limit-range{color:#b4cbb8}
+[data-theme="dark"] .operation-mark span{background:#334f38;color:#b4dcb8}[data-theme="dark"] .operation-mark span:nth-child(2){background:#594638;color:#e2b695}[data-theme="dark"] .operation-mark span:nth-child(4){background:#515239;color:#d8daa6}
+[data-theme="dark"] .selected-mode-label>span{color:#b4dcb8}
+@media(max-width:600px){.arithmetic-heading{margin:8px 0 20px}.operation-mark{gap:10px}.operation-mark span{width:46px;height:46px;font-size:30px}#setup{padding:22px 18px}#setup .choice-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.mode-options{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.mode-card{padding:16px 10px;min-height:150px}.mode-card .mode-flow{gap:8px;font-size:30px}.mode-card strong{font-size:14px}.mode-card small{font-size:11px}.game-wrap{padding-top:16px}}

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { makeQuestion, summarize } from '../js/math.js';
+import { makeQuestion, summarize } from './helpers/runtime.js';
 
 test('all operations generate valid integer answers at each difficulty', () => {
   for (const level of ['easy', 'medium', 'hard']) for (const operation of ['add', 'subtract', 'multiply', 'divide']) {

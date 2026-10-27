@@ -1,7 +1,9 @@
-export const operations = { add: { label: 'Addition', symbol: '+' }, subtract: { label: 'Subtraction', symbol: '−' }, multiply: { label: 'Multiplication', symbol: '×' }, divide: { label: 'Division', symbol: '÷' } };
+(() => {
+'use strict';
+const operations = { add: { label: 'Addition', symbol: '+' }, subtract: { label: 'Subtraction', symbol: '−' }, multiply: { label: 'Multiplication', symbol: '×' }, divide: { label: 'Division', symbol: '÷' } };
 const randomInt = (min, max, random) => Math.floor(random() * (max - min + 1)) + min;
 
-export function makeQuestion(operation, level, random = Math.random) {
+function makeQuestion(operation, level, random = Math.random) {
   const limits = { easy: [1, 9], medium: [10, 50], hard: [20, 99] };
   if (!operations[operation] || !limits[level]) throw new Error('Invalid question settings');
   const [min, max] = limits[level];
@@ -15,7 +17,10 @@ export function makeQuestion(operation, level, random = Math.random) {
   return { operation, a, b, answer };
 }
 
-export function summarize(answers) {
+function summarize(answers) {
   const correct = answers.filter(item => item.userAnswer === item.question.answer).length;
   return { correct, total: answers.length, percentage: answers.length ? Math.round(correct / answers.length * 100) : 0 };
 }
+
+globalThis.Jetta = { operations, makeQuestion, summarize };
+})();
