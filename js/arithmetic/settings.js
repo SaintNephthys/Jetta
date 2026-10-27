@@ -32,20 +32,43 @@
     function choose() {
       if (!dialog.open) dialog.showModal();
     }
-    changeButton.addEventListener('click', choose);
+    function setMode(nextMode) {
+      mode = nextMode;
+      const timed = mode === 'time';
+      document.querySelector('#selected-mode').textContent = timed
+        ? 'Time challenge'
+        : 'Question goal';
+      document.querySelector('#selected-mode-icon').textContent = timed ? '◷' : '#';
+      document.querySelector('#count-settings').hidden = timed;
+      document.querySelector('#time-settings').hidden = !timed;
+      const action = timed ? 'Switch to question goal' : 'Switch to time challenge';
+      changeButton.setAttribute('aria-label', action);
+      changeButton.title = action;
+    }
+    changeButton.addEventListener('click', () => setMode(mode === 'count' ? 'time' : 'count'));
     document.querySelector('#close-mode').addEventListener('click', () => dialog.close());
     dialog.addEventListener('close', () => changeButton.focus());
     dialog.querySelectorAll('[data-mode]').forEach((button) => {
       button.addEventListener('click', () => {
-        mode = button.dataset.mode;
-        document.querySelector('#selected-mode').textContent =
-          mode === 'count' ? 'Question goal' : 'Time challenge';
-        document.querySelector('#selected-mode-icon').textContent = mode === 'count' ? '#' : '◷';
-        document.querySelector('#count-settings').hidden = mode !== 'count';
-        document.querySelector('#time-settings').hidden = mode !== 'time';
+        setMode(button.dataset.mode);
         dialog.close();
       });
     });
+
+    const customPanel = document.querySelector('#custom-settings-panel');
+    const customFields = document.querySelector('#custom-settings');
+    function updateDifficulty() {
+      const custom = document.querySelector('input[name="level"]:checked').value === 'custom';
+      customPanel.dataset.open = String(custom);
+      customPanel.setAttribute('aria-hidden', String(!custom));
+      customPanel.inert = !custom;
+      customFields.disabled = !custom;
+      document.querySelector('#setup-error').textContent = '';
+    }
+    document.querySelectorAll('input[name="level"]').forEach((input) => {
+      input.addEventListener('change', updateDifficulty);
+    });
+    updateDifficulty();
 
     function read() {
       if (!mode) {
@@ -60,12 +83,21 @@
       if (!selected.length) return null;
       const input = mode === 'count' ? countInput : timeInput;
       if (!input.reportValidity()) return null;
-      return {
-        mode,
-        limit: Number(input.value),
-        selected,
-        level: document.querySelector('input[name="level"]:checked').value,
-      };
+      const level = document.querySelector('input[name="level"]:checked').value;
+      const customDigits =
+        level === 'custom'
+          ? {
+              first: Number(document.querySelector('#first-digits').value),
+              second: Number(document.querySelector('#second-digits').value),
+            }
+          : null;
+      if (level === 'custom' && !globalThis.Jetta.validCustomDigits(customDigits, selected)) {
+        error.textContent =
+          'For subtraction and division, the first number must have at least as many digits as the second.';
+        document.querySelector('#first-digits').focus();
+        return null;
+      }
+      return { mode, limit: Number(input.value), selected, level, customDigits };
     }
 
     return { choose, read };

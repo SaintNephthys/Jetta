@@ -86,3 +86,21 @@ test('invalid game settings are rejected', () => {
     );
   }
 });
+
+test('Custom sessions snapshot digit settings and validate them at construction', () => {
+  const customDigits = { first: 4, second: 2 };
+  const session = new PracticeSession({ ...settings, level: 'custom', customDigits });
+  customDigits.first = 1;
+  for (let index = 0; index < 3; index++) {
+    assert.equal(String(session.question.a).length, 4);
+    assert.equal(String(session.question.b).length, 2);
+    assert.equal(session.submit(session.question.answer, 2000 + index), true);
+  }
+  assert.equal(session.summary(3000).correct, 3);
+  for (const digits of [null, { first: 5, second: 1 }, { first: 1, second: 2 }]) {
+    assert.throws(
+      () => new PracticeSession({ ...settings, level: 'custom', customDigits: digits }),
+      /Invalid practice settings/,
+    );
+  }
+});

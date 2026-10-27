@@ -13,8 +13,14 @@ async function game(t, options) {
 }
 
 function selectMode(page, mode) {
-  if (!page.$('#mode-dialog').open) page.$('#change-mode').click();
-  page.$(`[data-mode="${mode}"]`).click();
+  if (page.$('#mode-dialog').open) page.$(`[data-mode="${mode}"]`).click();
+  else if (page.$('#selected-mode-icon').textContent !== (mode === 'count' ? '#' : '◷'))
+    page.$('#change-mode').click();
+}
+
+function selectDifficulty(page, level) {
+  const input = page.$(`input[name="level"][value="${level}"]`);
+  input.click();
 }
 
 test('home links to a standalone arithmetic page with all local assets available', async (t) => {
@@ -175,4 +181,100 @@ test('a restored game resumes its timer and expires at the original deadline', a
   assert.equal(page.$('#results').hidden, false);
   assert.equal(page.$('#elapsed').textContent, '30.0 sec');
   assert.equal(page.$('#total-count').textContent, '0');
+});
+
+test('mode button switches directly between the two modes without reopening the dialog', async (t) => {
+  const page = await game(t);
+  selectMode(page, 'count');
+  page.$('#count-settings [data-preset="50"]').click();
+  page.$('#change-mode').click();
+  assert.equal(page.$('#mode-dialog').open, false);
+  assert.equal(page.$('#count-settings').hidden, true);
+  assert.equal(page.$('#time-settings').hidden, false);
+  assert.equal(page.$('#selected-mode').textContent, 'Time challenge');
+  assert.equal(page.$('#change-mode').getAttribute('aria-label'), 'Switch to question goal');
+  page.$('#time-settings [data-preset="90"]').click();
+  page.$('#change-mode').click();
+  assert.equal(page.$('#mode-dialog').open, false);
+  assert.equal(page.$('#count-settings').hidden, false);
+  assert.equal(page.$('#time-settings').hidden, true);
+  assert.equal(page.$('#question-count').value, '50');
+  assert.equal(page.$('#time-limit').value, '90');
+});
+
+test('Custom opens digit controls, preserves them across difficulty changes and applies them to play', async (t) => {
+  const page = await game(t);
+  selectMode(page, 'count');
+  assert.deepEqual(
+    [...page.window.document.querySelectorAll('input[name="level"]')].map((input) => input.value),
+    ['easy', 'medium', 'custom', 'hard'],
+  );
+  const panel = page.$('#custom-settings-panel');
+  const fields = page.$('#custom-settings');
+  assert.equal(panel.dataset.open, 'false');
+  assert.equal(fields.disabled, true);
+  selectDifficulty(page, 'custom');
+  assert.equal(panel.dataset.open, 'true');
+  assert.equal(panel.getAttribute('aria-hidden'), 'false');
+  assert.equal(panel.inert, false);
+  assert.equal(fields.disabled, false);
+  typeValue(page, '#first-digits', 4);
+  typeValue(page, '#second-digits', 2);
+  for (const difficulty of ['easy', 'medium', 'hard']) {
+    selectDifficulty(page, difficulty);
+    assert.equal(panel.dataset.open, 'false');
+    assert.equal(panel.getAttribute('aria-hidden'), 'true');
+    assert.equal(panel.inert, true);
+    assert.equal(fields.disabled, true);
+    selectDifficulty(page, 'custom');
+    assert.equal(page.$('#first-digits').value, '4');
+    assert.equal(page.$('#second-digits').value, '2');
+  }
+  typeValue(page, '#question-count', 8);
+  page.$('#start-game').click();
+  for (let index = 0; index < 8; index++) {
+    const [a, , b] = page.$('#question').textContent.split(' ');
+    assert.equal(a.length, 4);
+    assert.equal(b.length, 2);
+    answerCorrectly(page);
+  }
+  assert.equal(page.$('#score').textContent, '100%');
+});
+
+test('Custom validates incompatible digit settings only for subtraction and division', async (t) => {
+  const page = await game(t);
+  selectMode(page, 'count');
+  selectDifficulty(page, 'custom');
+  typeValue(page, '#first-digits', 1);
+  typeValue(page, '#second-digits', 4);
+  page.$('#start-game').click();
+  assert.equal(page.$('#practice').hidden, true);
+  assert.match(page.$('#setup-error').textContent, /at least as many digits/);
+  page.$('input[name="operation"][value="subtract"]').checked = false;
+  page.$('input[name="operation"][value="divide"]').checked = false;
+  typeValue(page, '#question-count', 1);
+  page.$('#start-game').click();
+  const [a, , b] = page.$('#question').textContent.split(' ');
+  assert.equal(a.length, 1);
+  assert.equal(b.length, 4);
+  answerCorrectly(page);
+  assert.equal(page.$('#score').textContent, '100%');
+});
+
+test('Custom multiplication accepts the largest eight-digit answer', async (t) => {
+  const page = await game(t);
+  selectMode(page, 'count');
+  selectDifficulty(page, 'custom');
+  typeValue(page, '#first-digits', 4);
+  typeValue(page, '#second-digits', 4);
+  page.window.document.querySelectorAll('input[name="operation"]').forEach((input) => {
+    input.checked = input.value === 'multiply';
+  });
+  typeValue(page, '#question-count', 1);
+  page.window.Math.random = () => 1 - Number.EPSILON;
+  page.$('#start-game').click();
+  assert.equal(page.$('#question').textContent, '9999 × 9999 = ?');
+  assert.equal(page.$('#answer').maxLength, 8);
+  answerCorrectly(page);
+  assert.equal(page.$('#score').textContent, '100%');
 });

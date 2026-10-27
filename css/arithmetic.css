@@ -86,7 +86,7 @@ legend {
   grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 .choice-grid {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 .option {
   position: relative;
@@ -653,6 +653,9 @@ body.playing #back-home {
   }
 }
 @media (max-width: 360px) {
+  .choice-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
   .selected-mode-label {
     gap: 8px;
   }
@@ -721,4 +724,66 @@ body.playing #back-home {
   #practice {
     height: min(var(--visible-height, 100dvh), env(viewport-segment-height 0 0));
   }
+}
+
+/* Custom controls stay out of keyboard navigation while the panel collapses. */
+.custom-settings-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 280ms ease,
+    opacity 220ms ease;
+}
+.custom-settings-panel[data-open='true'] {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.custom-settings-content {
+  min-height: 0;
+  overflow: hidden;
+}
+.custom-digit-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: end;
+  gap: 12px;
+  margin-top: 12px;
+}
+.custom-digit-grid label {
+  min-width: 0;
+}
+.custom-digit-grid label > span {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.custom-digit-grid select {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px;
+  font: inherit;
+  font-size: 16px;
+  color: var(--text);
+  background: var(--background);
+}
+.custom-digit-grid select:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: -3px;
+}
+.custom-digit-operator {
+  align-self: end;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+}
+.custom-digits-hint {
+  margin: 10px 0 0;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.5;
 }

@@ -1,19 +1,29 @@
 (() => {
   'use strict';
-  const { makeQuestion, summarize } = globalThis.Jetta;
+  const { makeQuestion, summarize, validCustomDigits } = globalThis.Jetta;
 
   class PracticeSession {
-    constructor({ mode, limit, selected, level, now = Date.now(), random = Math.random }) {
+    constructor({
+      mode,
+      limit,
+      selected,
+      level,
+      customDigits = null,
+      now = Date.now(),
+      random = Math.random,
+    }) {
       if (
         !['count', 'time'].includes(mode) ||
         !Number.isInteger(limit) ||
         limit < 1 ||
         !selected?.length ||
         selected.some((op) => !['add', 'subtract', 'multiply', 'divide'].includes(op)) ||
-        !['easy', 'medium', 'hard'].includes(level)
+        !['easy', 'medium', 'custom', 'hard'].includes(level) ||
+        (level === 'custom' && !validCustomDigits(customDigits, selected))
       )
         throw new Error('Invalid practice settings');
       Object.assign(this, { mode, limit, selected: [...selected], level, started: now, random });
+      this.customDigits = level === 'custom' ? { ...customDigits } : null;
       this.answers = [];
       this.queue = [];
       this.finishedAt = null;
@@ -28,7 +38,7 @@
           [this.queue[i], this.queue[j]] = [this.queue[j], this.queue[i]];
         }
       }
-      return makeQuestion(this.queue.pop(), this.level, this.random);
+      return makeQuestion(this.queue.pop(), this.level, this.random, this.customDigits);
     }
 
     elapsed(now) {

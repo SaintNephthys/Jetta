@@ -145,7 +145,7 @@
                 >
               </div>
             </fieldset>
-            <fieldset>
+            <fieldset id="difficulty-settings">
               <legend>Difficulty</legend>
               <div class="choice-grid">
                 <label class="option"
@@ -175,6 +175,18 @@
                   ><input
                     type="radio"
                     name="level"
+                    value="custom"
+                    aria-label="Custom difficulty"
+                    aria-controls="custom-settings"
+                  /><span
+                    ><strong class="difficulty-mark" aria-hidden="true">⚙</strong
+                    ><small>Custom</small></span
+                  ></label
+                >
+                <label class="option"
+                  ><input
+                    type="radio"
+                    name="level"
                     value="hard"
                     aria-label="Hard difficulty"
                   /><span
@@ -184,6 +196,43 @@
                 >
               </div>
             </fieldset>
+            <div
+              id="custom-settings-panel"
+              class="custom-settings-panel"
+              data-open="false"
+              aria-hidden="true"
+              inert
+            >
+              <div class="custom-settings-content">
+                <fieldset id="custom-settings" disabled>
+                  <legend><span aria-hidden="true">⚙</span> Digits</legend>
+                  <div class="custom-digit-grid">
+                    <label for="first-digits"
+                      ><span>First number</span
+                      ><select id="first-digits" aria-describedby="custom-digits-hint">
+                        <option value="1">1 digit</option>
+                        <option value="2" selected>2 digits</option>
+                        <option value="3">3 digits</option>
+                        <option value="4">4 digits</option>
+                      </select></label
+                    >
+                    <span class="custom-digit-operator" aria-hidden="true">⋯</span>
+                    <label for="second-digits"
+                      ><span>Second number</span
+                      ><select id="second-digits" aria-describedby="custom-digits-hint">
+                        <option value="1" selected>1 digit</option>
+                        <option value="2">2 digits</option>
+                        <option value="3">3 digits</option>
+                        <option value="4">4 digits</option>
+                      </select></label
+                    >
+                  </div>
+                  <p id="custom-digits-hint" class="custom-digits-hint">
+                    For − and ÷, first digits ≥ second digits.
+                  </p>
+                </fieldset>
+              </div>
+            </div>
             <fieldset id="count-settings">
               <legend><span aria-hidden="true">#</span> Questions</legend>
               <label class="sr-only" for="question-count">Number of questions, from 1 to 200</label>
@@ -323,7 +372,7 @@
                   autocapitalize="off"
                   spellcheck="false"
                   placeholder="Answer"
-                  maxlength="6"
+                  maxlength="8"
                   required
                 /><button class="primary" type="submit">Submit <span>→</span></button>
               </form>
