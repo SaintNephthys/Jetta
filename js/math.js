@@ -1,4 +1,4 @@
-export const operations = { add: { label: '덧셈', symbol: '+' }, subtract: { label: '뺄셈', symbol: '−' }, multiply: { label: '곱셈', symbol: '×' }, divide: { label: '나눗셈', symbol: '÷' } };
+export const operations = { add: { label: 'Addition', symbol: '+' }, subtract: { label: 'Subtraction', symbol: '−' }, multiply: { label: 'Multiplication', symbol: '×' }, divide: { label: 'Division', symbol: '÷' } };
 const randomInt = (min, max, random) => Math.floor(random() * (max - min + 1)) + min;
 
 export function makeQuestion(operation, level, random = Math.random) {
