@@ -2,7 +2,7 @@
 
 ## Project Structure & Module Organization
 
-JETTA is a static browser game collection. `index.html` is the game library; `games/arithmetic.html` is a standalone game page. `css/style.css` defines shared sky-blue theme tokens and controls; page styles live in `css/home.css` and `css/arithmetic.css`. Shared scripts live in `js/`, while `js/arithmetic/` separates arithmetic, session state, settings, rendering, viewport handling, and controller logic. Automated tests live in `tests/`. Keep documentation at the root. Exclude `node_modules/` and generated artifacts from version control; commit `package-lock.json` for reproducible development installs.
+JETTA is a static browser game collection. `index.html` is the game library; `games/arithmetic.html` is a standalone game page. `css/style.css` defines shared light sky-blue and dark neon theme tokens and controls; page styles live in `css/home.css` and `css/arithmetic.css`. Shared scripts live in `js/`, while `js/arithmetic/` separates arithmetic, session state, settings, rendering, viewport handling, and controller logic. Automated tests live in `tests/`. Keep documentation at the root. Exclude `node_modules/` and generated artifacts from version control; commit `package-lock.json` for reproducible development installs.
 
 ## Build, Test, and Development Commands
 
@@ -10,7 +10,7 @@ The site needs no build step or runtime dependencies. Open `index.html` directly
 
 ## Coding Style & Naming Conventions
 
-Use Prettier with the committed configuration: two-space indentation, single-quoted JavaScript strings, and a 100-column print width. Keep DOM-free game rules separate from browser UI. Use shared CSS custom properties for colors, native links for page navigation, and the `hidden` attribute for game screen visibility. Avoid duplicated overrides, credentials, and machine-specific configuration.
+Use Prettier with the committed configuration: two-space indentation, single-quoted JavaScript strings, and a 100-column print width. Keep DOM-free game rules separate from browser UI. Custom operands stay within 12 digits, but their products require BigInt; pass answer input as strings and use the shared answer normalization/comparison helpers. Persist session summaries rather than raw BigInt answer data. Use shared CSS custom properties for colors, native links for page navigation, and the `hidden` attribute for game screen visibility. Avoid duplicated overrides, credentials, and machine-specific configuration.
 
 ## Testing Guidelines
 

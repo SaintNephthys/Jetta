@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { makeQuestion, summarize } from './helpers/runtime.js';
+import { makeQuestion, summarize, normalizeAnswer, answersMatch } from './helpers/runtime.js';
 
 test('all operations generate valid integer answers at each difficulty', () => {
   for (const level of ['easy', 'medium', 'hard'])
@@ -56,49 +56,77 @@ test('Easy and Medium retain the old Medium and Hard ranges while Hard increases
   }
 });
 
-test('Custom operands keep exactly the requested digits and arithmetic remains integral', () => {
-  for (let first = 1; first <= 4; first++)
-    for (let second = 1; second <= 4; second++) {
-      for (const operation of ['add', 'subtract', 'multiply', 'divide']) {
-        const digits = { first, second };
-        if (first < second && ['subtract', 'divide'].includes(operation)) {
-          assert.throws(
-            () => makeQuestion(operation, 'custom', Math.random, digits),
-            /Invalid question/,
-          );
-          continue;
-        }
-        for (const random of [() => 0, () => 1 - Number.EPSILON, () => 0.5, Math.random]) {
-          for (let sample = 0; sample < 20; sample++) {
-            const question = makeQuestion(operation, 'custom', random, digits);
-            assert.equal(String(question.a).length, first);
-            assert.equal(String(question.b).length, second);
-            assert.ok(Number.isSafeInteger(question.answer));
-            assert.ok(question.answer >= 0 && question.answer < 100000000);
-            const expected =
-              operation === 'add'
-                ? question.a + question.b
-                : operation === 'subtract'
-                  ? question.a - question.b
-                  : operation === 'multiply'
-                    ? question.a * question.b
-                    : question.a / question.b;
-            assert.equal(question.answer, expected);
+test('Custom mixes operand lengths within each selected maximum with exact arithmetic', () => {
+  let seed = 12345;
+  const seededRandom = () => (seed = (seed * 1664525 + 1013904223) >>> 0) / 2 ** 32;
+  for (let maxDigits = 1; maxDigits <= 12; maxDigits++) {
+    const lengths = new Set();
+    for (const operation of ['add', 'subtract', 'multiply', 'divide']) {
+      for (const random of [() => 0, () => 1 - Number.EPSILON, seededRandom]) {
+        for (let i = 0; i < 100; i++) {
+          const q = makeQuestion(operation, 'custom', random, maxDigits);
+          assert.ok(String(q.a).length <= maxDigits && String(q.b).length <= maxDigits);
+          assert.ok(q.a > 0 && q.b > 0);
+          assert.ok(Number.isSafeInteger(q.a) && Number.isSafeInteger(q.b));
+          const a = BigInt(q.a),
+            b = BigInt(q.b);
+          const expected =
+            operation === 'add'
+              ? a + b
+              : operation === 'subtract'
+                ? a - b
+                : operation === 'multiply'
+                  ? a * b
+                  : a / b;
+          assert.equal(BigInt(q.answer), expected);
+          assert.ok(expected >= 0n);
+          if (operation === 'divide') assert.equal(a % b, 0n);
+          if (operation === 'add' && random === seededRandom) {
+            lengths.add(String(q.a).length);
+            lengths.add(String(q.b).length);
           }
         }
       }
     }
+    assert.equal(lengths.size, maxDigits);
+  }
 });
 
-test('invalid custom digit values are rejected before generating questions', () => {
-  for (const digits of [
-    null,
+test('12-digit multiplication and neighboring answers remain distinct', () => {
+  const q = makeQuestion('multiply', 'custom', () => 1 - Number.EPSILON, 12);
+  assert.equal(q.answer, 999999999998000000000001n);
+  assert.equal(answersMatch('999999999998000000000001', q.answer), true);
+  assert.equal(answersMatch('999999999998000000000002', q.answer), false);
+  assert.deepEqual(
+    summarize([
+      { question: q, userAnswer: q.answer },
+      { question: q, userAnswer: q.answer + 1n },
+    ]),
+    { correct: 1, total: 2, percentage: 50 },
+  );
+});
+
+test('answer normalization preserves exact integers and rejects malformed or unsafe numeric inputs', () => {
+  assert.equal(normalizeAnswer('00042'), 42);
+  assert.equal(normalizeAnswer('9007199254740993'), 9007199254740993n);
+  assert.equal(normalizeAnswer(999999999998000000000001n), 999999999998000000000001n);
+  for (const value of [
+    '',
+    '-1',
+    '1.5',
+    '1e12',
+    '9'.repeat(25),
+    Number.MAX_SAFE_INTEGER + 1,
+    NaN,
+    Infinity,
     {},
-    { first: 0, second: 1 },
-    { first: 5, second: 1 },
-    { first: 2, second: 1.5 },
-    { first: '2', second: 1 },
-  ]) {
-    assert.throws(() => makeQuestion('add', 'custom', Math.random, digits), /Invalid question/);
-  }
+    null,
+    -1n,
+  ])
+    assert.equal(normalizeAnswer(value), null);
+});
+
+test('invalid Custom maximum values are rejected before question generation', () => {
+  for (const value of [null, 0, 13, 1.5, '12', {}, { first: 2, second: 1 }])
+    assert.throws(() => makeQuestion('add', 'custom', Math.random, value), /Invalid question/);
 });

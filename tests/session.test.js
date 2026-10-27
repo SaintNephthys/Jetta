@@ -87,20 +87,23 @@ test('invalid game settings are rejected', () => {
   }
 });
 
-test('Custom sessions snapshot digit settings and validate them at construction', () => {
-  const customDigits = { first: 4, second: 2 };
-  const session = new PracticeSession({ ...settings, level: 'custom', customDigits });
-  customDigits.first = 1;
-  for (let index = 0; index < 3; index++) {
-    assert.equal(String(session.question.a).length, 4);
-    assert.equal(String(session.question.b).length, 2);
-    assert.equal(session.submit(session.question.answer, 2000 + index), true);
-  }
-  assert.equal(session.summary(3000).correct, 3);
-  for (const digits of [null, { first: 5, second: 1 }, { first: 1, second: 2 }]) {
+test('Custom sessions apply the maximum and accept exact large integer answers', () => {
+  const session = new PracticeSession({
+    ...settings,
+    selected: ['multiply'],
+    level: 'custom',
+    maxDigits: 12,
+    random: () => 1 - Number.EPSILON,
+  });
+  assert.equal(session.question.answer, 999999999998000000000001n);
+  assert.equal(session.submit(Number('999999999998000000000001'), 2000), false);
+  assert.equal(session.submit('999999999998000000000001', 2000), true);
+  assert.equal(session.submit('999999999998000000000002', 3000), true);
+  assert.equal(session.submit('999999999998000000000001', 4000), true);
+  assert.equal(session.summary(4000).correct, 2);
+  for (const maxDigits of [null, 0, 13, 1.5, '12'])
     assert.throws(
-      () => new PracticeSession({ ...settings, level: 'custom', customDigits: digits }),
+      () => new PracticeSession({ ...settings, level: 'custom', maxDigits }),
       /Invalid practice settings/,
     );
-  }
 });

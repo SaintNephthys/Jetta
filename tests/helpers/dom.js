@@ -66,8 +66,8 @@ export function typeValue(page, selector, value) {
 
 export function answerCorrectly(page) {
   const [a, operator, b] = page.$('#question').textContent.split(' ');
-  const left = Number(a),
-    right = Number(b);
+  const left = BigInt(a),
+    right = BigInt(b);
   const value =
     operator === '+'
       ? left + right

@@ -14,39 +14,44 @@
     hard: { min: 100, max: 999, factorMin: 10, factorMax: 99 },
   };
 
-  function validCustomDigits(digits, selected) {
-    return Boolean(
-      digits &&
-        [digits.first, digits.second].every(
-          (value) => Number.isInteger(value) && value >= 1 && value <= 4,
-        ) &&
-        (!selected.some((operation) => operation === 'subtract' || operation === 'divide') ||
-          digits.first >= digits.second),
-    );
+  function validMaxDigits(value) {
+    return Number.isInteger(value) && value >= 1 && value <= 12;
+  }
+
+  // Operands fit within Number's exact integer range. Products of 12-digit
+  // operands do not, so normalize answers through BigInt before comparing.
+  function normalizeAnswer(value) {
+    if (typeof value === 'number') return Number.isSafeInteger(value) && value >= 0 ? value : null;
+    if (typeof value === 'string' && /^[0-9]{1,24}$/.test(value)) value = BigInt(value);
+    if (typeof value !== 'bigint' || value < 0n || value >= 10n ** 24n) return null;
+    return value <= BigInt(Number.MAX_SAFE_INTEGER) ? Number(value) : value;
+  }
+
+  function answersMatch(value, expected) {
+    const actual = normalizeAnswer(value);
+    return actual !== null && actual === normalizeAnswer(expected);
   }
 
   function digitRange(digits) {
     return [10 ** (digits - 1), 10 ** digits - 1];
   }
 
-  function makeQuestion(operation, level, random = Math.random, customDigits = null) {
+  function makeQuestion(operation, level, random = Math.random, maxDigits = null) {
     if (
       !Object.hasOwn(operations, operation) ||
-      (level === 'custom'
-        ? !validCustomDigits(customDigits, [operation])
-        : !Object.hasOwn(presets, level))
+      (level === 'custom' ? !validMaxDigits(maxDigits) : !Object.hasOwn(presets, level))
     ) {
       throw new Error('Invalid question settings');
     }
     let a, b, answer;
     if (level === 'custom') {
-      const [firstMin, firstMax] = digitRange(customDigits.first);
-      const [secondMin, secondMax] = digitRange(customDigits.second);
+      const firstDigits = randomInt(1, maxDigits, random);
+      const secondDigits = randomInt(1, operation === 'divide' ? firstDigits : maxDigits, random);
+      const [firstMin, firstMax] = digitRange(firstDigits);
+      const [secondMin, secondMax] = digitRange(secondDigits);
       a = randomInt(firstMin, firstMax, random);
       b = randomInt(secondMin, secondMax, random);
       if (operation === 'divide') {
-        // Choose a whole-number quotient whose product stays in the requested
-        // dividend range, instead of changing the requested operand lengths.
         answer = randomInt(Math.ceil(firstMin / b), Math.floor(firstMax / b), random);
         a = answer * b;
       }
@@ -67,12 +72,14 @@
       if (b > a) [a, b] = [b, a];
       answer = a - b;
     }
-    if (operation === 'multiply') answer = a * b;
+    if (operation === 'multiply') answer = normalizeAnswer(BigInt(a) * BigInt(b));
     return { operation, a, b, answer };
   }
 
   function summarize(answers) {
-    const correct = answers.filter((item) => item.userAnswer === item.question.answer).length;
+    const correct = answers.filter((item) =>
+      answersMatch(item.userAnswer, item.question.answer),
+    ).length;
     return {
       correct,
       total: answers.length,
@@ -84,6 +91,8 @@
     operations,
     makeQuestion,
     summarize,
-    validCustomDigits,
+    validMaxDigits,
+    normalizeAnswer,
+    answersMatch,
   });
 })();

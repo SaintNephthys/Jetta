@@ -84,20 +84,14 @@
       const input = mode === 'count' ? countInput : timeInput;
       if (!input.reportValidity()) return null;
       const level = document.querySelector('input[name="level"]:checked').value;
-      const customDigits =
-        level === 'custom'
-          ? {
-              first: Number(document.querySelector('#first-digits').value),
-              second: Number(document.querySelector('#second-digits').value),
-            }
-          : null;
-      if (level === 'custom' && !globalThis.Jetta.validCustomDigits(customDigits, selected)) {
-        error.textContent =
-          'For subtraction and division, the first number must have at least as many digits as the second.';
-        document.querySelector('#first-digits').focus();
+      const maxDigits =
+        level === 'custom' ? Number(document.querySelector('#max-digits').value) : null;
+      if (level === 'custom' && !globalThis.Jetta.validMaxDigits(maxDigits)) {
+        error.textContent = 'Choose a maximum from 1 to 12 digits.';
+        document.querySelector('#max-digits').focus();
         return null;
       }
-      return { mode, limit: Number(input.value), selected, level, customDigits };
+      return { mode, limit: Number(input.value), selected, level, maxDigits };
     }
 
     return { choose, read };

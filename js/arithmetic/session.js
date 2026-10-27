@@ -1,6 +1,6 @@
 (() => {
   'use strict';
-  const { makeQuestion, summarize, validCustomDigits } = globalThis.Jetta;
+  const { makeQuestion, summarize, validMaxDigits, normalizeAnswer } = globalThis.Jetta;
 
   class PracticeSession {
     constructor({
@@ -8,7 +8,7 @@
       limit,
       selected,
       level,
-      customDigits = null,
+      maxDigits = null,
       now = Date.now(),
       random = Math.random,
     }) {
@@ -19,11 +19,11 @@
         !selected?.length ||
         selected.some((op) => !['add', 'subtract', 'multiply', 'divide'].includes(op)) ||
         !['easy', 'medium', 'custom', 'hard'].includes(level) ||
-        (level === 'custom' && !validCustomDigits(customDigits, selected))
+        (level === 'custom' && !validMaxDigits(maxDigits))
       )
         throw new Error('Invalid practice settings');
       Object.assign(this, { mode, limit, selected: [...selected], level, started: now, random });
-      this.customDigits = level === 'custom' ? { ...customDigits } : null;
+      this.maxDigits = level === 'custom' ? maxDigits : null;
       this.answers = [];
       this.queue = [];
       this.finishedAt = null;
@@ -38,7 +38,7 @@
           [this.queue[i], this.queue[j]] = [this.queue[j], this.queue[i]];
         }
       }
-      return makeQuestion(this.queue.pop(), this.level, this.random, this.customDigits);
+      return makeQuestion(this.queue.pop(), this.level, this.random, this.maxDigits);
     }
 
     elapsed(now) {
@@ -59,8 +59,10 @@
     }
 
     submit(value, now) {
-      if (this.update(now) || !Number.isSafeInteger(value) || value < 0) return false;
-      this.answers.push({ question: this.question, userAnswer: value });
+      if (this.update(now)) return false;
+      const userAnswer = normalizeAnswer(value);
+      if (userAnswer === null) return false;
+      this.answers.push({ question: this.question, userAnswer });
       if (this.mode === 'count' && this.answers.length === this.limit) this.finishedAt = now;
       else this.question = this.nextQuestion();
       return true;

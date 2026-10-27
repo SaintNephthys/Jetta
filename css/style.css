@@ -27,19 +27,19 @@
 
 [data-theme='dark'] {
   color-scheme: dark;
-  --background: #0b1728;
-  --surface: #12273c;
-  --surface-soft: #17364e;
-  --text: #e1f3ff;
-  --muted: #a4c2d7;
-  --border: #2c506c;
-  --accent: #7dd3fc;
-  --accent-hover: #bae6fd;
-  --accent-text: #0b1728;
-  --selected: #1a425e;
-  --focus: #38bdf8;
-  --error: #ffb4a5;
-  --shadow: 0 12px 32px #00000020;
+  --background: #03050c;
+  --surface: #090f1c;
+  --surface-soft: #101e31;
+  --text: #f0f7ff;
+  --muted: #bbcee5;
+  --border: #557796;
+  --accent: #35f2ff;
+  --accent-hover: #a0faff;
+  --accent-text: #03050c;
+  --selected: #073743;
+  --focus: #ff72ec;
+  --error: #ff97c8;
+  --shadow: 0 0 24px #35f2ff18;
 }
 
 * {
@@ -237,4 +237,12 @@ footer > div {
     transition: none !important;
     scroll-behavior: auto !important;
   }
+}
+
+[data-theme='dark'] .primary {
+  box-shadow: 0 0 18px #35f2ff25;
+}
+[data-theme='dark'] .brand-icon,
+[data-theme='dark'] .question-label {
+  text-shadow: 0 0 12px #35f2ff44;
 }

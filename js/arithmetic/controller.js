@@ -86,7 +86,7 @@
     }
     const input = $('#answer');
     if (!input.validity.valid || !/^[0-9]+$/.test(input.value)) return;
-    if (!session.submit(Number(input.value), now)) return;
+    if (!session.submit(input.value, now)) return;
     if (session.finishedAt !== null) finish();
     else {
       renderQuestion(session);

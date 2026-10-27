@@ -175,23 +175,23 @@
                   ><input
                     type="radio"
                     name="level"
-                    value="custom"
-                    aria-label="Custom difficulty"
-                    aria-controls="custom-settings"
+                    value="hard"
+                    aria-label="Hard difficulty"
                   /><span
-                    ><strong class="difficulty-mark" aria-hidden="true">⚙</strong
-                    ><small>Custom</small></span
+                    ><strong class="difficulty-mark" aria-hidden="true">● ● ●</strong
+                    ><small>Hard</small></span
                   ></label
                 >
                 <label class="option"
                   ><input
                     type="radio"
                     name="level"
-                    value="hard"
-                    aria-label="Hard difficulty"
+                    value="custom"
+                    aria-label="Custom difficulty"
+                    aria-controls="custom-settings"
                   /><span
-                    ><strong class="difficulty-mark" aria-hidden="true">● ● ●</strong
-                    ><small>Hard</small></span
+                    ><strong class="difficulty-mark" aria-hidden="true">⚙</strong
+                    ><small>Custom</small></span
                   ></label
                 >
               </div>
@@ -206,29 +206,25 @@
               <div class="custom-settings-content">
                 <fieldset id="custom-settings" disabled>
                   <legend><span aria-hidden="true">⚙</span> Digits</legend>
-                  <div class="custom-digit-grid">
-                    <label for="first-digits"
-                      ><span>First number</span
-                      ><select id="first-digits" aria-describedby="custom-digits-hint">
-                        <option value="1">1 digit</option>
-                        <option value="2" selected>2 digits</option>
-                        <option value="3">3 digits</option>
-                        <option value="4">4 digits</option>
-                      </select></label
-                    >
-                    <span class="custom-digit-operator" aria-hidden="true">⋯</span>
-                    <label for="second-digits"
-                      ><span>Second number</span
-                      ><select id="second-digits" aria-describedby="custom-digits-hint">
-                        <option value="1" selected>1 digit</option>
-                        <option value="2">2 digits</option>
-                        <option value="3">3 digits</option>
-                        <option value="4">4 digits</option>
-                      </select></label
-                    >
-                  </div>
+                  <label class="max-digits-control" for="max-digits"
+                    ><span>Max digits</span
+                    ><select id="max-digits" aria-describedby="custom-digits-hint">
+                      <option value="1">1</option>
+                      <option value="2" selected>2</option>
+                      <option value="3">3</option>
+                      <option value="4">4</option>
+                      <option value="5">5</option>
+                      <option value="6">6</option>
+                      <option value="7">7</option>
+                      <option value="8">8</option>
+                      <option value="9">9</option>
+                      <option value="10">10</option>
+                      <option value="11">11</option>
+                      <option value="12">12</option>
+                    </select></label
+                  >
                   <p id="custom-digits-hint" class="custom-digits-hint">
-                    For − and ÷, first digits ≥ second digits.
+                    Numbers use 1 to your selected maximum digits.
                   </p>
                 </fieldset>
               </div>
@@ -372,7 +368,7 @@
                   autocapitalize="off"
                   spellcheck="false"
                   placeholder="Answer"
-                  maxlength="8"
+                  maxlength="24"
                   required
                 /><button class="primary" type="submit">Submit <span>→</span></button>
               </form>

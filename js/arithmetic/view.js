@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const { operations, summarize, storage } = globalThis.Jetta;
+  const { operations, summarize, storage, answersMatch } = globalThis.Jetta;
   const historyKey = 'thinking-playground-last';
   const $ = (selector) => document.querySelector(selector);
 
@@ -15,6 +15,10 @@
     $('#question-number').textContent = String(session.answers.length + 1).padStart(2, '0');
     $('#question').textContent =
       `${question.a} ${operations[question.operation].symbol} ${question.b} = ?`;
+    $('#question').classList.toggle(
+      'long-question',
+      String(question.a).length + String(question.b).length > 12,
+    );
     $('#answer').value = '';
     $('#answer').focus({ preventScroll: true });
   }
@@ -70,7 +74,7 @@
       const result = document.createElement('span');
       const { question, userAnswer } = item;
       expression.textContent = `${index + 1}. ${question.a} ${operations[question.operation].symbol} ${question.b} = ${userAnswer}`;
-      const correct = userAnswer === question.answer;
+      const correct = answersMatch(userAnswer, question.answer);
       result.className = correct ? 'correct' : 'wrong';
       result.textContent = correct ? 'Correct ✓' : `Correct answer: ${question.answer}`;
       row.append(expression, result);

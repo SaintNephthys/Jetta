@@ -151,6 +151,7 @@ test('saved themes, legacy practice history and blocked storage work across page
     },
   });
   assert.equal(page.window.document.documentElement.dataset.theme, 'dark');
+  assert.equal(page.$('meta[name="theme-color"]').content, '#03050c');
   assert.equal(page.$('#history').hidden, false);
   page.$('#theme-toggle').click();
   assert.equal(page.window.localStorage.getItem('thinking-playground-theme'), 'light');
@@ -202,12 +203,17 @@ test('mode button switches directly between the two modes without reopening the 
   assert.equal(page.$('#time-limit').value, '90');
 });
 
-test('Custom opens digit controls, preserves them across difficulty changes and applies them to play', async (t) => {
+test('Custom appears after Hard and its single maximum control opens, closes and retains its value', async (t) => {
   const page = await game(t);
   selectMode(page, 'count');
   assert.deepEqual(
     [...page.window.document.querySelectorAll('input[name="level"]')].map((input) => input.value),
-    ['easy', 'medium', 'custom', 'hard'],
+    ['easy', 'medium', 'hard', 'custom'],
+  );
+  assert.equal(page.window.document.querySelectorAll('#custom-settings select').length, 1);
+  assert.deepEqual(
+    [...page.$('#max-digits').options].map((option) => option.value),
+    Array.from({ length: 12 }, (_, i) => String(i + 1)),
   );
   const panel = page.$('#custom-settings-panel');
   const fields = page.$('#custom-settings');
@@ -218,8 +224,7 @@ test('Custom opens digit controls, preserves them across difficulty changes and 
   assert.equal(panel.getAttribute('aria-hidden'), 'false');
   assert.equal(panel.inert, false);
   assert.equal(fields.disabled, false);
-  typeValue(page, '#first-digits', 4);
-  typeValue(page, '#second-digits', 2);
+  typeValue(page, '#max-digits', 12);
   for (const difficulty of ['easy', 'medium', 'hard']) {
     selectDifficulty(page, difficulty);
     assert.equal(panel.dataset.open, 'false');
@@ -227,54 +232,59 @@ test('Custom opens digit controls, preserves them across difficulty changes and 
     assert.equal(panel.inert, true);
     assert.equal(fields.disabled, true);
     selectDifficulty(page, 'custom');
-    assert.equal(page.$('#first-digits').value, '4');
-    assert.equal(page.$('#second-digits').value, '2');
+    assert.equal(page.$('#max-digits').value, '12');
   }
   typeValue(page, '#question-count', 8);
   page.$('#start-game').click();
   for (let index = 0; index < 8; index++) {
     const [a, , b] = page.$('#question').textContent.split(' ');
-    assert.equal(a.length, 4);
-    assert.equal(b.length, 2);
+    assert.ok(a.length <= 12 && b.length <= 12);
     answerCorrectly(page);
   }
   assert.equal(page.$('#score').textContent, '100%');
 });
 
-test('Custom validates incompatible digit settings only for subtraction and division', async (t) => {
+test('Custom accepts the exact 24-digit product and rejects an adjacent incorrect answer', async (t) => {
   const page = await game(t);
   selectMode(page, 'count');
   selectDifficulty(page, 'custom');
-  typeValue(page, '#first-digits', 1);
-  typeValue(page, '#second-digits', 4);
-  page.$('#start-game').click();
-  assert.equal(page.$('#practice').hidden, true);
-  assert.match(page.$('#setup-error').textContent, /at least as many digits/);
-  page.$('input[name="operation"][value="subtract"]').checked = false;
-  page.$('input[name="operation"][value="divide"]').checked = false;
-  typeValue(page, '#question-count', 1);
-  page.$('#start-game').click();
-  const [a, , b] = page.$('#question').textContent.split(' ');
-  assert.equal(a.length, 1);
-  assert.equal(b.length, 4);
-  answerCorrectly(page);
-  assert.equal(page.$('#score').textContent, '100%');
-});
-
-test('Custom multiplication accepts the largest eight-digit answer', async (t) => {
-  const page = await game(t);
-  selectMode(page, 'count');
-  selectDifficulty(page, 'custom');
-  typeValue(page, '#first-digits', 4);
-  typeValue(page, '#second-digits', 4);
+  typeValue(page, '#max-digits', 12);
   page.window.document.querySelectorAll('input[name="operation"]').forEach((input) => {
     input.checked = input.value === 'multiply';
   });
-  typeValue(page, '#question-count', 1);
+  typeValue(page, '#question-count', 2);
   page.window.Math.random = () => 1 - Number.EPSILON;
   page.$('#start-game').click();
-  assert.equal(page.$('#question').textContent, '9999 × 9999 = ?');
-  assert.equal(page.$('#answer').maxLength, 8);
+  assert.equal(page.$('#question').textContent, '999999999999 × 999999999999 = ?');
+  assert.equal(page.$('#question').classList.contains('long-question'), true);
+  assert.equal(page.$('#answer').maxLength, 24);
   answerCorrectly(page);
+  typeValue(page, '#answer', '999999999998000000000002');
+  page.$('#answer-form').requestSubmit();
+  assert.equal(page.$('#score').textContent, '50%');
+  assert.match(page.$('#question-results').textContent, /Correct answer: 999999999998000000000001/);
+  assert.equal(
+    page.window.JSON.parse(page.window.localStorage.getItem('thinking-playground-last')).correct,
+    1,
+  );
+});
+
+test('invalid maximum digit settings do not start Custom sessions', async (t) => {
+  const page = await game(t);
+  selectMode(page, 'count');
+  selectDifficulty(page, 'custom');
+  typeValue(page, '#max-digits', '');
+  page.$('#start-game').click();
+  assert.equal(page.$('#practice').hidden, true);
+  assert.match(page.$('#setup-error').textContent, /1 to 12/);
+  typeValue(page, '#max-digits', 1);
+  typeValue(page, '#question-count', 4);
+  page.$('#start-game').click();
+  for (let i = 0; i < 4; i++) {
+    const [a, , b] = page.$('#question').textContent.split(' ');
+    assert.equal(a.length, 1);
+    assert.equal(b.length, 1);
+    answerCorrectly(page);
+  }
   assert.equal(page.$('#score').textContent, '100%');
 });
