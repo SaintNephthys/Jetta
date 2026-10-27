@@ -38,6 +38,7 @@ npm test        # 산술·세션·페이지 및 DOM 동작 테스트
 npm run check   # Prettier 포맷 검사
 npm run format  # 코드 포맷 적용
 npm run build:pages # 공개 파일만 artifacts/pages/에 구성
+npm run deploy:prepare # 의존성 설치 → 포맷 검사 → 테스트 → 배포 파일 생성
 ```
 
 테스트는 문제 생성, 두 모드의 종료 조건과 마감 시각, 프리셋과 직접 입력, 파일 직접 실행, 페이지 이동 경로, 테마 및 키보드 뷰포트 처리, 최대 12자리 출제와 24자리 정답 채점, 다크 테마 색상 대비를 검증합니다. DOM 테스트는 jsdom에서 실행하므로 실제 화면 배치나 기기 키보드를 검증하지는 않습니다. 모바일·태블릿·폴더블과 키보드가 열린 상태의 최종 배치는 실기기 브라우저에서 확인해야 합니다.
@@ -60,7 +61,17 @@ npm run build:pages # 공개 파일만 artifacts/pages/에 구성
 
 ## GitHub Pages 배포
 
-`.github/workflows/pages.yml`은 push와 pull request에서 포맷 검사·테스트·배포 파일 구성을 실행합니다. 검증이 성공한 **원격 저장소의 기본 브랜치**에서만 GitHub Pages에 자동 배포합니다. 다른 브랜치나 PR에서는 배포하지 않으며, 기본 브랜치의 **Actions → Validate and deploy Pages → Run workflow**에서도 다시 실행할 수 있습니다.
+`.github/workflows/pages.yml`은 push와 pull request에서 `npm run deploy:prepare`를 실행합니다. 이 명령은 `scripts/deploy-pages.sh`를 통해 `npm ci` → 포맷 검사 → 테스트 → 공개 파일 패키징을 순서대로 수행하며, 하나라도 실패하면 즉시 중단합니다. 검증이 성공한 **원격 저장소의 기본 브랜치**에서만 GitHub Pages에 자동 배포합니다. 다른 브랜치나 PR에서는 배포하지 않으며, 기본 브랜치의 **Actions → Validate and deploy Pages → Run workflow**에서도 다시 실행할 수 있습니다.
+
+배포 준비 스크립트는 저장소 루트 외의 경로에서 호출해도 자체 위치를 기준으로 동작합니다.
+
+```sh
+npm run deploy:prepare
+# 또는
+./scripts/deploy-pages.sh
+```
+
+로컬 실행은 `artifacts/pages/`를 준비하는 단계까지 수행하며 사이트를 게시하지 않습니다. GitHub Actions에서는 `GITHUB_OUTPUT`에 `artifact_path`를 기록하고 단계 요약을 생성합니다. 다음 단계는 이 경로만 업로드하며, 실제 게시는 `actions/deploy-pages`가 처리합니다. 스크립트에는 별도 배포 토큰을 넣지 않습니다.
 
 최초 연결 시 한 번 설정합니다.
 

@@ -6,7 +6,8 @@
     "test": "node --test tests/*.test.js",
     "check": "prettier --check .",
     "format": "prettier --write .",
-    "build:pages": "node scripts/build-pages.js"
+    "build:pages": "node scripts/build-pages.js",
+    "deploy:prepare": "bash scripts/deploy-pages.sh"
   },
   "devDependencies": {
     "jsdom": "26.1.0",
