@@ -31,3 +31,47 @@
 [data-theme="dark"] .result-row .wrong,[data-theme="dark"] .error{color:#f0a99d}
 @media(max-width:700px){.games-section{padding-top:60px}.section-heading h1{font-size:30px}.game-card{min-height:310px}}
 .game-card{min-height:0;padding:28px}.game-card-bottom{align-items:center}.game-card h3{margin:0}.section-heading h1{margin:0}@media(max-width:700px){.game-card{min-height:0}}
+
+/* Game types, touch controls, and the visible viewport above the keyboard. */
+button,input{touch-action:manipulation}
+button:focus-visible,a:focus-visible{outline:3px solid #78aa80;outline-offset:4px}
+#mode-dialog{width:min(640px,calc(100% - 32px));max-height:calc(100dvh - 32px);overflow:auto;border:1px solid #dce7dc;border-radius:20px;padding:32px;color:inherit;background:#fff}
+#mode-dialog::backdrop{background:#101b15aa;backdrop-filter:blur(4px)}
+.mode-dialog-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+#close-mode{min-width:44px;min-height:44px;font-size:20px}
+#mode-dialog h2{font-size:clamp(22px,4vw,28px);margin:14px 0}
+#mode-description{color:#687d70;line-height:1.6}
+.mode-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:24px}
+.mode-card{display:flex;flex-direction:column;align-items:flex-start;gap:12px;padding:24px;text-align:left;border:1px solid #dce7dc;border-radius:12px;background:#f4f8f2;color:inherit;min-height:190px}
+.mode-card:hover{border-color:#689a72;background:#eaf3e6}
+.mode-card>span{font-size:32px;color:#4b805b}.mode-card strong{font-size:19px}.mode-card small{font-size:14px;line-height:1.6;color:#687d70}
+.mode-summary{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:20px 0;border-bottom:1px solid #e4eae1;margin-top:16px}
+.mode-summary strong{display:block;margin-top:8px;line-height:1.5;font-size:15px}.mode-summary button{min-height:44px;padding:10px 16px}
+.limit-label{display:block;font-size:13px;color:#687d70;margin:12px 0}
+.limit-input{display:block;width:min(100%,240px);min-height:48px;border:1px solid #689a72;border-radius:8px;padding:12px;background:transparent;color:inherit;font-size:18px}
+.option span{padding:10px 6px;text-align:center}.game-heading>div{min-width:0}.heading-symbol{flex-shrink:0}.game-heading{gap:12px}
+body.playing{overflow:hidden;overscroll-behavior:none}
+body.playing>.header,body.playing footer,body.playing .game-heading,body.playing #back-home{visibility:hidden}
+#practice{position:fixed;z-index:10;top:var(--visible-top,0px);left:calc(var(--visible-left,0px) + var(--visible-width,100vw)/2);transform:translateX(-50%);width:min(860px,var(--visible-width,100vw));height:var(--visible-height,100dvh);margin:0;border-radius:0;padding:max(16px,env(safe-area-inset-top)) max(20px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(20px,env(safe-area-inset-left));display:flex;flex-direction:column;overflow:auto;overscroll-behavior:contain}
+#practice .practice-top{align-items:center;gap:12px;flex-shrink:0}
+#practice h2{font-size:20px;margin:6px 0}#quit-game{min-height:44px;min-width:44px}
+.live-stats{display:flex;justify-content:space-between;gap:20px;margin-top:12px;flex-shrink:0}.live-stats>div{display:flex;align-items:center;gap:12px}.live-stats span{font-size:12px;color:#687d70}.live-stats strong{font-size:24px;font-variant-numeric:tabular-nums}
+#practice .progress-info{margin-top:12px;flex-shrink:0}#practice .progress-track{flex-shrink:0}
+#practice .question-area{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px 0 0;min-height:min-content}
+#practice .question{font-size:clamp(28px,7vw,64px);margin:12px 0 20px;overflow-wrap:anywhere;max-width:100%}
+#answer-form{margin:0 auto;width:100%;max-width:540px;flex-shrink:0;flex-direction:row;gap:8px}
+#answer{font-size:20px;min-height:50px;width:0;padding:12px 8px;scroll-margin:16px}
+#answer-form button{min-height:50px;gap:12px;padding:12px 16px}
+#practice .answer-hint{margin:12px 0 0;line-height:1.5}
+#result-title:focus{outline:none}.result-row{flex-wrap:wrap}.history-card{flex-wrap:wrap}
+[data-theme="dark"] #mode-dialog{background:#202c23;border-color:#405347}
+[data-theme="dark"] .mode-card{background:#2d4131;border-color:#405347}
+[data-theme="dark"] .mode-card:hover{background:#38523d;border-color:#8bc394}
+[data-theme="dark"] .mode-card>span,[data-theme="dark"] .mode-card small,[data-theme="dark"] #mode-description,[data-theme="dark"] .limit-label,[data-theme="dark"] .live-stats span{color:#b4cbb8}
+[data-theme="dark"] .mode-summary{border-color:#405347}
+@media(max-width:600px){.mode-options{grid-template-columns:1fr}.mode-card{min-height:0;padding:20px;gap:8px}.mode-card>span{font-size:26px}#mode-dialog{padding:20px}.game-heading h1{font-size:clamp(23px,6vw,31px)}.heading-symbol{font-size:40px}.operation-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.choice-grid{gap:6px}.choice-grid small{font-size:10px}.panel-icon{display:none}.score-row{gap:16px}.result-stats div{flex-wrap:wrap}.game-card-bottom{flex-wrap:wrap}}
+.compact-game #practice{padding-top:max(8px,env(safe-area-inset-top));padding-bottom:max(8px,env(safe-area-inset-bottom))}.compact-game #practice .step-label,.compact-game #practice .answer-hint{display:none}.compact-game #practice .question-area{padding-top:10px}.compact-game #practice .question{font-size:clamp(26px,6vw,46px);margin:6px 0 10px}.compact-game .live-stats{margin-top:4px}.compact-game .live-stats strong{font-size:20px}.compact-game #practice .progress-info{margin-top:6px}.compact-game #practice h2{font-size:17px}
+/* On devices with a hinge, keep the game within the first usable segment. */
+@media(horizontal-viewport-segments:2){#practice{width:min(860px,env(viewport-segment-width 0 0));left:calc(env(viewport-segment-left 0 0) + env(viewport-segment-width 0 0)/2)}}
+@media(vertical-viewport-segments:2){#practice{height:min(var(--visible-height,100dvh),env(viewport-segment-height 0 0))}}
+.short-game #practice .progress-info,.short-game #practice .progress-track,.short-game #practice .question-label{display:none}.short-game #practice .question-area{padding-top:4px}.short-game #practice .question{font-size:30px;margin:0 0 6px}.short-game .live-stats{margin-top:0}.short-game .live-stats strong{font-size:18px}

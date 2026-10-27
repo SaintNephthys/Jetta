@@ -2,11 +2,11 @@
 
 ## Project Structure & Module Organization
 
-This repository is currently empty. As code is added, keep application source, tests, and static assets in clearly named, separate directories. Place project documentation at the root, and update this guide when the structure is established. Keep generated files and local dependencies out of version control.
+JETTA is a static browser game collection. `index.html` contains the screens, `css/` contains responsive styles, `js/` contains UI, arithmetic, and session modules, and `tests/` contains automated tests. Keep documentation at the root and generated files and local dependencies out of version control.
 
 ## Build, Test, and Development Commands
 
-No build system or development commands have been configured yet. When adding one, document the commands for installing dependencies, running locally, building, and testing here. Prefer commands that work from the repository root, and record required runtime versions and setup steps in a README.
+No dependency installation or build is needed. From the root, run `python3 -m http.server 8000` for local development and `npm test` for tests (Node.js 18+). See README.md for setup and hosting.
 
 ## Coding Style & Naming Conventions
 
@@ -14,7 +14,7 @@ Follow the conventions of the language and framework introduced to the project. 
 
 ## Testing Guidelines
 
-No test framework or coverage target is defined yet. Add automated tests alongside new behavior, including regression tests for bug fixes. Choose a consistent test naming and directory convention for the selected framework, and document the command needed to run the suite. Run relevant tests before submitting changes.
+Use the built-in Node.js test runner with `tests/*.test.js`. Test arithmetic generation and session behavior independently from the DOM, including deadline boundaries and regression cases. Run `npm test` before committing. For layout changes, also inspect desktop, tablet, narrow phone, and reduced-height keyboard viewports in a browser.
 
 ## Commit & Pull Request Guidelines
 
